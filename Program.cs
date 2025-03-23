@@ -8,6 +8,7 @@ builder.Services.AddDbContext<MyDbContext>(o =>
 {
     o.UseSqlServer(builder.Configuration.GetConnectionString("local"));
 });
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddControllers();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
