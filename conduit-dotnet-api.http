@@ -1,0 +1,15 @@
+@conduit-dotnet-api_HostAddress = https://localhost:7174
+@conduit_dotnet_api_HostAddress = http://localhost:5031
+
+GET {{conduit_dotnet_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{conduit-dotnet-api_HostAddress}}/api/Auth
+
+###
+
+GET {{conduit-dotnet-api_HostAddress}}/api/auth/login
+
+###
