@@ -25,10 +25,21 @@ namespace conduit_dotnet_api.Controllers
             _authService = authService;
         }
 
-        [HttpGet("users/login")]
-        public IActionResult Login()
+        [HttpPost("users/login")]
+        public async Task<IActionResult> Login(LoginRequest request)
         {
-            return Ok("hai");
+            var user = await _userRepository.GetByEmail(request.User.Email);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            if (!BCryptNet.Verify(request.User.Password, user.Password))
+            {
+                return Unauthorized();
+            }
+            var token = _authService.GenerateToken(user.Email);
+            var resp = _mapper.Map<UserResponse>(user);
+            return Ok(resp);
         }
 
         [HttpPost("users")]
