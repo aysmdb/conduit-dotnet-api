@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using conduit_dotnet_api.Models.Entities;
 using conduit_dotnet_api.Models.Requests;
+using conduit_dotnet_api.Models.Responses;
 using conduit_dotnet_api.Repositories;
 using conduit_dotnet_api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,10 @@ namespace conduit_dotnet_api.Controllers
             request.User.Password = BCryptNet.HashPassword(request.User.Password);
             var user = _mapper.Map<User>(request);
 
-            var resp = await _userRepository.Create(user);
+            var newUser = await _userRepository.Create(user);
+            var resp = _mapper.Map<UserResponse>(newUser);
+            resp.User.Token = token;
+
             return Ok(resp);
         }
     }
