@@ -1,4 +1,5 @@
 ﻿using conduit_dotnet_api.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace conduit_dotnet_api.Repositories.Implementations
 {
@@ -18,9 +19,9 @@ namespace conduit_dotnet_api.Repositories.Implementations
             return user;
         }
 
-        public Task<User> GetByEmail(string email)
+        public async Task<User?> GetByEmail(string email)
         {
-            throw new NotImplementedException();
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public Task<User> GetById(int id)

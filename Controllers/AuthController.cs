@@ -4,12 +4,13 @@ using conduit_dotnet_api.Models.Requests;
 using conduit_dotnet_api.Models.Responses;
 using conduit_dotnet_api.Repositories;
 using conduit_dotnet_api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace conduit_dotnet_api.Controllers
 {
-    [Route("api/users")]
+    [Route("api")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -24,13 +25,13 @@ namespace conduit_dotnet_api.Controllers
             _authService = authService;
         }
 
-        [HttpGet("login")]
+        [HttpGet("users/login")]
         public IActionResult Login()
         {
             return Ok("hai");
         }
 
-        [HttpPost("")]
+        [HttpPost("users")]
         public async Task<IActionResult> Register(RegistrationRequest request)
         {
             var token = _authService.GenerateToken(request.User.Email);
@@ -41,6 +42,24 @@ namespace conduit_dotnet_api.Controllers
             var resp = _mapper.Map<UserResponse>(newUser);
             resp.User.Token = token;
 
+            return Ok(resp);
+        }
+
+        [Authorize]
+        [HttpGet("user")]
+        public async Task<IActionResult> CurrentUser()
+        {
+            var email = _authService.GetEmail();
+            if (email == null)
+            {
+                return Unauthorized();
+            }
+            var user = await _userRepository.GetByEmail(email);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            var resp = _mapper.Map<UserResponse>(user);
             return Ok(resp);
         }
     }

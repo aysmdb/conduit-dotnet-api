@@ -7,6 +7,13 @@ namespace conduit_dotnet_api.Services.Implementations
 {
     public class AuthService : IAuthService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public AuthService(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
         public string GenerateToken(string email)
         {
             var claims = new[]
@@ -26,6 +33,12 @@ namespace conduit_dotnet_api.Services.Implementations
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string? GetEmail()
+        {
+            var email = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return email;
         }
     }
 }

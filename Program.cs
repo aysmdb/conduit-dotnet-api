@@ -17,6 +17,7 @@ builder.Services.AddDbContext<MyDbContext>(o =>
 });
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -29,6 +30,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = "https://localhost:7174",
             ValidAudience = "https://localhost:7174",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_super_secret_keythatmustbe32characterlongisthisreallife"))
+        };
+        options.Events ??= new();
+        options.Events.OnMessageReceived = context =>
+        {
+            var authHeader = context.Request.Headers.Authorization.ToString();
+
+            if (authHeader.StartsWith("Token ", StringComparison.Ordinal))
+            {
+                context.Token = authHeader["Token ".Length..];
+            }
+            else
+            {
+                // Skip NoResult() if you want to fall back to trying to read the "Bearer " token.
+                context.NoResult();
+            }
+
+            return Task.CompletedTask;
         };
     });
 builder.Services.AddAuthorization();

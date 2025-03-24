@@ -3,5 +3,6 @@
     public interface IAuthService
     {
         string GenerateToken(string email);
+        string? GetEmail();
     }
 }
