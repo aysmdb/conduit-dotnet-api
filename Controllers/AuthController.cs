@@ -37,7 +37,7 @@ namespace conduit_dotnet_api.Controllers
             {
                 return Unauthorized();
             }
-            var token = _authService.GenerateToken(user.Email);
+            var token = _authService.GenerateToken(user.Id);
             var resp = _mapper.Map<UserResponse>(user);
             return Ok(resp);
         }
@@ -45,11 +45,11 @@ namespace conduit_dotnet_api.Controllers
         [HttpPost("users")]
         public async Task<IActionResult> Register(RegistrationRequest request)
         {
-            var token = _authService.GenerateToken(request.User.Email);
             request.User.Password = BCryptNet.HashPassword(request.User.Password);
             var user = _mapper.Map<User>(request);
 
             var newUser = await _userRepository.Create(user);
+            var token = _authService.GenerateToken(newUser.Id);
             var resp = _mapper.Map<UserResponse>(newUser);
             resp.User.Token = token;
 
@@ -60,12 +60,12 @@ namespace conduit_dotnet_api.Controllers
         [HttpGet("user")]
         public async Task<IActionResult> CurrentUser()
         {
-            var email = _authService.GetEmail();
-            if (email == null)
+            var id = _authService.GetId();
+            if (id == null)
             {
                 return Unauthorized();
             }
-            var user = await _userRepository.GetByEmail(email);
+            var user = await _userRepository.GetById((int)id);
             if (user == null)
             {
                 return Unauthorized();

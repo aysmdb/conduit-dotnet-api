@@ -2,7 +2,8 @@
 {
     public interface IAuthService
     {
-        string GenerateToken(string email);
+        string GenerateToken(int sub);
         string? GetEmail();
+        int? GetId();
     }
 }

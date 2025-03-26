@@ -14,11 +14,11 @@ namespace conduit_dotnet_api.Services.Implementations
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string GenerateToken(string email)
+        public string GenerateToken(int sub)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, email),
+                new Claim(JwtRegisteredClaimNames.Sub, sub.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
@@ -39,6 +39,16 @@ namespace conduit_dotnet_api.Services.Implementations
         {
             var email = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return email;
+        }
+
+        public int? GetId()
+        {
+            var id = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (id == null)
+            {
+                return null;
+            }
+            return int.Parse(id);
         }
     }
 }
