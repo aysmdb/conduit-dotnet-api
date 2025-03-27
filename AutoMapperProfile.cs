@@ -22,6 +22,20 @@ namespace conduit_dotnet_api
 
             CreateMap<UpdateUserRequest, User>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<User, ProfileResponse>()
+                .ForPath(dest => dest.Profile.Username, opt =>
+                {
+                    opt.MapFrom(src => src.Username);
+                })
+                .ForPath(dest => dest.Profile.Bio, opt =>
+                {
+                    opt.MapFrom(src => src.Bio);
+                })
+                .ForPath(dest => dest.Profile.Image, opt =>
+                {
+                    opt.MapFrom(src => src.Image);
+                });
         }
     }
 }
