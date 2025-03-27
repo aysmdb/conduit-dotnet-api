@@ -19,6 +19,9 @@ namespace conduit_dotnet_api
                 .ForPath(dest => dest.User.Username, opt => opt.MapFrom(src => src.Username))
                 .ForPath(dest => dest.User.Bio, opt => opt.MapFrom(src => src.Bio))
                 .ForPath(dest => dest.User.Image, opt => opt.MapFrom(src => src.Image));
+
+            CreateMap<UpdateUserRequest, User>()
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

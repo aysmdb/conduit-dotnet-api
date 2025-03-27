@@ -28,5 +28,12 @@ namespace conduit_dotnet_api.Repositories.Implementations
         {
             return await _context.Users.FindAsync(id);
         }
+
+        public async Task<User> Update(User user)
+        {
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
     }
 }

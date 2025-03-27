@@ -39,6 +39,7 @@ namespace conduit_dotnet_api.Controllers
             }
             var token = _authService.GenerateToken(user.Id);
             var resp = _mapper.Map<UserResponse>(user);
+            resp.User.Token = token;
             return Ok(resp);
         }
 
@@ -71,6 +72,26 @@ namespace conduit_dotnet_api.Controllers
                 return Unauthorized();
             }
             var resp = _mapper.Map<UserResponse>(user);
+            return Ok(resp);
+        }
+
+        [Authorize]
+        [HttpPut("user")]
+        public async Task<IActionResult> UpdateUser(UpdateUserRequest request)
+        {
+            var id = _authService.GetId();
+            if (id == null)
+            {
+                return Unauthorized();
+            }
+            var user = await _userRepository.GetById((int)id);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            user = _mapper.Map(request, user);
+            var updatedUser = await _userRepository.Update(user);
+            var resp = _mapper.Map<UserResponse>(updatedUser);
             return Ok(resp);
         }
     }
